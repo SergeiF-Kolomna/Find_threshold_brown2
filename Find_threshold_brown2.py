@@ -51,7 +51,7 @@ def calculate_dimensions(cropped_image, pixel_per_cm):
         if area > 0:
             #dimensions = area/(pixel_per_cm)**2
             dimensions = calculate_area(area, pixel_per_cm)
-            if dimensions > 1 and dimensions < 500.1  :  # Check if area is more than 0.1 sq.cm. and less then 5.1
+            if dimensions > 0.03 and dimensions < 30.1  :  # Check if area is more than 0.1 sq.cm. and less then 5.1
 
                 (x, y, w, h) = cv2.boundingRect(contour)
 
