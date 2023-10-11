@@ -16,6 +16,7 @@ etalon_line = 100
 scale_percent = 31
 brown_spots = []
 brown_spot_index = 0
+pixel_per_cm = 0
 #contours = None
 
 
@@ -89,7 +90,7 @@ def mouse_callback(event, x, y, flags, param):
             point2 = frame_end
 
 def on_key(event):
-    global point1, point2, image_mini, frame_start, frame_end, dark_spots, my_im, contours
+    global point1, point2, image_mini, frame_start, frame_end, dark_spots, my_im, contours, pixel_per_cm
 
     if event == ord('a') and frame_start and frame_end:
         frame_start = (min(frame_start[0], frame_end[0]), min(frame_start[1], frame_end[1]))
@@ -112,7 +113,7 @@ def on_key(event):
         #cv2.imshow("Cropped Image", cropped_image_with_dimensions)
 
 def on_trackbar(val):
-    global threshold_value, image_mini, dark_spots, LH, LS, LV, UH, US, UV, my_im, contours
+    global threshold_value, image_mini, dark_spots, LH, LS, LV, UH, US, UV, my_im, contours, pixel_per_cm
 
     threshold_value = val
     LH = cv2.getTrackbarPos("LH", "Identified defects")
@@ -126,7 +127,7 @@ def on_trackbar(val):
         point1 = frame_start
         point2 = frame_end
 
-        pixel_per_cm = calculate_distance(point1, point2) / etalon_line
+        #pixel_per_cm = calculate_distance(point1, point2) / etalon_line
         cropped_image = image_mini[frame_start[1]:frame_end[1], frame_start[0]:frame_end[0]]
         dark_spots, my_im, my_contou = calculate_dimensions(cropped_image, pixel_per_cm)
 
@@ -183,6 +184,8 @@ def main():
 
     event, values = window.read()
 
+    #pixel_per_cm = calculate_distance(point1, point2) / etalon_line
+
     if event == 'Submit':
         image_path = values[0] 
 
@@ -194,9 +197,9 @@ def main():
         dim = (width, height)
         image_mini = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
         image_mini = white_balance(image_mini)
-        cv2.namedWindow("Identified defects")
+        cv2.namedWindow("Identified defects", cv2.WINDOW_NORMAL)
         cv2.setMouseCallback("Identified defects", mouse_callback)
-        cv2.createTrackbar("Threshold", "Identified defects", threshold_value, 255, on_trackbar)
+        #cv2.createTrackbar("Threshold", "Identified defects", threshold_value, 255, on_trackbar)
         cv2.createTrackbar("LH", "Identified defects", 0, 255, on_trackbar)
         cv2.createTrackbar("LS", "Identified defects", 0, 255, on_trackbar)
         cv2.createTrackbar("LV", "Identified defects", 0, 255, on_trackbar)
@@ -232,7 +235,7 @@ def main():
             if key == ord("a") and frame_start and frame_end:
                 on_key(key)
 
-        return threshold_value, image_mini, dark_spots, frame_start, frame_end, point1, point2, values[0], LH, LS, LV, UH, US, UV
+        return threshold_value, image_mini, dark_spots, frame_start, frame_end, point1, point2, values[0], LH, LS, LV, UH, US, UV, pixel_per_cm
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
